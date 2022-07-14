@@ -1,22 +1,30 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"os"
 
-	"github.com/chenzhijie/go-web3"
+	"github.com/ethereum/go-ethereum/ethclient"
 	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
-	kovanAPIKey := os.Getenv("KOVAN_API_KEY")
-	web3, err := web3.NewWeb3("https://kovan.infura.io/v3/" + kovanAPIKey)
+	kovanEndpoint := os.Getenv("KOVAN_ENDPOINT")
+	cl, err := ethclient.Dial(kovanEndpoint)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	blockNumber, err := web3.Eth.GetBlockNumber()
+	block, err := cl.BlockByNumber(context.Background(), nil)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	fmt.Println("Current block number: ", blockNumber)
+	fmt.Printf("block number %v", block.Number())
+	// channel := make(chan *contract.ContractPing)
+	// go func() {
+	// 	sub, err := ctr.WatchDeposited(&bind.WatchOpts{Context: context.Background(), Start: nil}, channel)
+	// 	defer sub.Unsubscribe()
+	// }()
+	// event := <-channel
 }
